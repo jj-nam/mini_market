@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.joonzis.mybatis.mapper.bbs">
+	<select id="total_count_of_bbs" resultType="int">
+		SELECT COUNT(*) FROM BBS
+	</select>
+	
+	<select id="select_by_map" resultType="org.joonzis.vo.BVO" parameterType="Map">
+		SELECT * FROM
+		(SELECT rownum r_num, A.* FROM
+		(SELECT * FROM BBS ORDER BY B_IDX DESC)A)
+		WHERE r_num BETWEEN #{begin} and #{end}
+	</select>
+	
+	<insert id="insert_bbs" parameterType="org.joonzis.vo.BVO">
+		INSERT INTO bbs
+		VALUES(
+			bbs_seq.nextval,
+			#{writer},
+			#{title},
+			#{content},
+			sysdate,
+			#{filename},
+			0,
+			0,
+			#{ip},
+			#{price}
+		)
+	</insert>
+	
+	<insert id="insert_sold" parameterType="org.joonzis.vo.BVO">
+		INSERT INTO sold
+		VALUES(
+			sold_seq.nextval,
+			#{b_idx},
+			#{b_person},
+			#{title},
+			#{filename},
+			#{price},
+			sysdate,
+		)
+	</insert>
+	
+	<update id="update_hit" parameterType="org.joonzis.vo.BVO">
+		UPDATE BBS SET HIT=#{hit} WHERE B_IDX=#{b_idx}
+	</update>
+	
+	<select id="bbs_by_idx" parameterType="int" resultType="org.joonzis.vo.BVO">
+		SELECT * FROM BBS WHERE b_idx=#{b_idx}	
+	</select>
+	
+	<update id="update_bbs" parameterType="org.joonzis.vo.BVO">
+		UPDATE BBS
+		SET
+			title=#{title},
+			content=#{content},
+			filename=#{filename},
+			ip=#{ip},
+			price=#{price}
+		WHERE
+			b_idx=#{b_idx}
+	</update>
+	
+	<delete id="delete_bbs" parameterType="int">
+		DELETE FROM BBS WHERE B_IDX = #{b_idx}
+	</delete>
+	
+</mapper>
